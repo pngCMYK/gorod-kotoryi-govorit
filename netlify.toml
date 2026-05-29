@@ -1,6 +1,11 @@
+# Статический сайт (index.html), не Next.js
 [build]
   publish = "."
   command = ""
+
+[build.environment]
+  # Netlify видит next в package.json и включает plugin-nextjs — отключаем
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [[headers]]
   for = "/*"
