@@ -532,6 +532,12 @@ body:not(.app-loading) .bottom-left {
 }
 .ctrl-play-big:hover { background: rgba(255,255,255,0.85); transform: scale(1.05); }
 .ctrl-play-big:active { transform: scale(0.96); }
+.play-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.play-icon-wrap .hidden { display: none; }
 .ctrl-time {
   font-size: 10px;
   color: var(--gray);
@@ -849,23 +855,18 @@ body:not(.app-loading) .bottom-left {
     flex-shrink: 0;
   }
   .mini-bar-play-btn {
-    height: 100%;
-    min-height: 40px;
-    padding: 0 18px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--white);
-    font-size: 17px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    background: var(--white);
+    color: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-  }
-  .player-mini-bar.playing .mini-bar-play-btn {
-    background: var(--white);
-    color: var(--bg);
-    border-color: var(--white);
   }
 
   /* ── When expanded player is open: скрываем всё лишнее ─────── */

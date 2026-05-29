@@ -892,6 +892,14 @@ const miniBarTitle      = document.getElementById('mini-bar-title');
 const miniBarPlayIcon   = document.getElementById('mini-bar-play-icon');
 const miniBarWaveform   = document.getElementById('mini-bar-waveform');
 
+function setPlayIcons(playing) {
+  [playIcon, miniBarPlayIcon].forEach(wrap => {
+    if (!wrap) return;
+    wrap.querySelector('.icon-play')?.classList.toggle('hidden', playing);
+    wrap.querySelector('.icon-pause')?.classList.toggle('hidden', !playing);
+  });
+}
+
 function isMobile() {
   return window.matchMedia('(max-width: 480px)').matches;
 }
@@ -922,11 +930,10 @@ function updateMiniBarState() {
   if (!playerMiniBar) return;
   if (S.playing) {
     playerMiniBar.classList.add('playing');
-    if (miniBarPlayIcon) miniBarPlayIcon.textContent = '⏸';
   } else {
     playerMiniBar.classList.remove('playing');
-    if (miniBarPlayIcon) miniBarPlayIcon.textContent = '▶';
   }
+  setPlayIcons(S.playing);
 }
 
 /* ── Expand / Collapse mobile player (Spotify-style) ─────────── */
@@ -1050,7 +1057,7 @@ function loadEpisode(id, realDistrictName) {
   document.getElementById('player-card-date').textContent = ep.date;
 
   // Controls reset
-  playIcon.textContent = '▶';
+  setPlayIcons(false);
   progressBar.value = 0;
   timeCur.textContent = '0:00';
   timeTot.textContent = '—:——';
@@ -1116,7 +1123,7 @@ audioEl.addEventListener('timeupdate', () => {
 
 audioEl.addEventListener('ended', () => {
   S.playing = false;
-  playIcon.textContent = '▶';
+  setPlayIcons(false);
   playerCard.classList.remove('playing');
   progressBar.value = 0;
   updateWaveformFill(0);
@@ -1126,7 +1133,7 @@ audioEl.addEventListener('ended', () => {
 
 audioEl.addEventListener('play',  () => {
   S.playing = true;
-  playIcon.textContent = '⏸';
+  setPlayIcons(true);
   playerCard.classList.add('playing');
   ctrlsBar.classList.add('playing');
   updateMiniBarState();
@@ -1134,7 +1141,7 @@ audioEl.addEventListener('play',  () => {
 
 audioEl.addEventListener('pause', () => {
   S.playing = false;
-  playIcon.textContent = '▶';
+  setPlayIcons(false);
   playerCard.classList.remove('playing');
   ctrlsBar.classList.remove('playing');
   updateMiniBarState();
@@ -1148,14 +1155,14 @@ function togglePlay() {
     if (Birds.isActive()) {
       Birds.stop();
       S.playing = false;
-      playIcon.textContent = '▶';
+      setPlayIcons(false);
       playerCard.classList.remove('playing');
       ctrlsBar.classList.remove('playing');
     } else {
       Birds.setVolume(0.8);
       Birds.start();
       S.playing = true;
-      playIcon.textContent = '⏸';
+      setPlayIcons(true);
       playerCard.classList.add('playing');
       ctrlsBar.classList.add('playing');
       clearSimTimer();
@@ -1179,12 +1186,12 @@ function togglePlay() {
       S.playing = false;
       clearSimTimer();
       CityAmbience.stop();
-      playIcon.textContent = '▶';
+      setPlayIcons(false);
       playerCard.classList.remove('playing');
       ctrlsBar.classList.remove('playing');
     } else {
       S.playing = true;
-      playIcon.textContent = '⏸';
+      setPlayIcons(true);
       playerCard.classList.add('playing');
       ctrlsBar.classList.add('playing');
       CityAmbience.setVolume(0.8);
@@ -1207,7 +1214,7 @@ function runSim() {
       clearSimTimer();
       CityAmbience.stop();
       S.playing = false;
-      playIcon.textContent = '▶';
+      setPlayIcons(false);
       playerCard.classList.remove('playing');
       ctrlsBar.classList.remove('playing');
       updateMiniBarState();
