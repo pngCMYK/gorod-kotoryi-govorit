@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мобильное превью — Город, который говорит</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #111;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .toolbar-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-right: 4px;
+    }
+
+    .device-btn {
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .device-btn:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+    }
+    .device-btn.active {
+      background: #fff;
+      border-color: #fff;
+      color: #000;
+    }
+
+    .sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.12);
+      margin: 0 4px;
+    }
+
+    .rotate-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .rotate-btn:hover {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+    }
+    .rotate-btn svg { transition: transform 0.3s; }
+
+    .phone-wrapper {
+      position: relative;
+      transition: width 0.35s cubic-bezier(0.4,0,0.2,1),
+                  height 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .phone-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 44px;
+      border: 3px solid #333;
+      background: #000;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 20px 60px rgba(0,0,0,0.5),
+        0 4px 16px rgba(0,0,0,0.3),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 34px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+    .phone-notch::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      box-shadow: inset 0 0 2px rgba(255,255,255,0.1);
+    }
+
+    .phone-home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.25);
+      z-index: 100;
+    }
+
+    .phone-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+
+    .info-bar {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+    .info-bar span {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .info-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="toolbar-label">Устройство</span>
+
+  <button class="device-btn" data-w="375" data-h="667" data-notch="0">iPhone SE</button>
+  <button class="device-btn" data-w="390" data-h="844" data-notch="1">iPhone 14</button>
+  <button class="device-btn active" data-w="393" data-h="852" data-notch="1">iPhone 15</button>
+  <button class="device-btn" data-w="430" data-h="932" data-notch="1">iPhone 15 Pro Max</button>
+  <button class="device-btn" data-w="360" data-h="800" data-notch="0">Android</button>
+
+  <div class="sep"></div>
+
+  <button class="rotate-btn" id="rotate-btn" title="Повернуть">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="1 4 1 10 7 10"/>
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+    </svg>
+  </button>
+</div>
+
+<div class="phone-wrapper" id="phone-wrapper">
+  <div class="phone-frame" id="phone-frame">
+    <div class="phone-notch" id="phone-notch"></div>
+    <div class="phone-home-indicator"></div>
+    <iframe class="phone-iframe" id="phone-iframe"></iframe>
+  </div>
+</div>
+
+<div class="info-bar" id="info-bar">
+  <span id="info-size">393 × 852</span>
+  <div class="info-dot"></div>
+  <span id="info-device">iPhone 15</span>
+  <div class="info-dot"></div>
+  <span id="info-scale">—</span>
+</div>
+
+<script>
+  const wrapper    = document.getElementById('phone-wrapper');
+  const frame      = document.getElementById('phone-frame');
+  const iframe     = document.getElementById('phone-iframe');
+  const notch      = document.getElementById('phone-notch');
+  const infoSize   = document.getElementById('info-size');
+  const infoDevice = document.getElementById('info-device');
+  const infoScale  = document.getElementById('info-scale');
+
+  let currentW = 393, currentH = 852, rotated = false, hasNotch = true;
+
+  function applySize(w, h, showNotch) {
+    const maxH = window.innerHeight - 180;
+    const maxW = window.innerWidth - 48;
+
+    let displayW = w;
+    let displayH = h;
+    let scale = 1;
+
+    if (displayH > maxH) {
+      scale = maxH / displayH;
+      displayW = Math.round(w * scale);
+      displayH = Math.round(h * scale);
+    }
+    if (displayW > maxW) {
+      const s2 = maxW / displayW;
+      scale *= s2;
+      displayW = Math.round(displayW * s2);
+      displayH = Math.round(displayH * s2);
+    }
+
+    wrapper.style.width  = displayW + 'px';
+    wrapper.style.height = displayH + 'px';
+
+    const borderRadius = Math.round(44 * scale);
+    frame.style.borderRadius = borderRadius + 'px';
+
+    notch.style.display = showNotch ? 'block' : 'none';
+
+    infoSize.textContent = w + ' × ' + h;
+    infoScale.textContent = scale < 1 ? Math.round(scale * 100) + '% масштаб' : '100%';
+  }
+
+  function reloadIframe() {
+    iframe.src = '';
+    setTimeout(() => { iframe.src = 'index.html?_=' + Date.now(); }, 50);
+  }
+
+  function selectDevice(w, h, showNotch, label) {
+    currentW = w;
+    currentH = h;
+    hasNotch = showNotch;
+    rotated = false;
+    applySize(w, h, showNotch);
+    infoDevice.textContent = label;
+    reloadIframe();
+
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    const match = document.querySelector(`.device-btn[data-w="${w}"][data-h="${h}"]`);
+    if (match) match.classList.add('active');
+  }
+
+  document.querySelectorAll('.device-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const w = parseInt(btn.dataset.w);
+      const h = parseInt(btn.dataset.h);
+      const n = btn.dataset.notch === '1';
+      selectDevice(w, h, n, btn.textContent.trim());
+    });
+  });
+
+  document.getElementById('rotate-btn').addEventListener('click', () => {
+    rotated = !rotated;
+    const w = rotated ? currentH : currentW;
+    const h = rotated ? currentW : currentH;
+    applySize(w, h, false);
+    infoSize.textContent = w + ' × ' + h;
+    document.querySelector('#rotate-btn svg').style.transform =
+      rotated ? 'rotate(90deg)' : 'rotate(0deg)';
+  });
+
+  window.addEventListener('resize', () => {
+    const w = rotated ? currentH : currentW;
+    const h = rotated ? currentW : currentH;
+    applySize(w, h, rotated ? false : hasNotch);
+  });
+
+  applySize(currentW, currentH, hasNotch);
+  reloadIframe();
+</script>
+
+</body>
+</html>
