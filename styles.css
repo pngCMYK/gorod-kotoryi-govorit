@@ -11,6 +11,10 @@
   --f-body:  'Inter', sans-serif;
   --r: 14px;
   --r-sm: 8px;
+  --tg-safe-top: 0px;
+  --tg-safe-bottom: 0px;
+  --tg-content-safe-top: 0px;
+  --tg-content-safe-bottom: 0px;
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -81,7 +85,8 @@ body.app-loading .hint-pill {
   opacity: 0;
 }
 body:not(.app-loading) .top-left-btns,
-body:not(.app-loading) .bottom-left {
+body:not(.app-loading) .bottom-left,
+body:not(.app-loading) .hint-pill:not(.hidden) {
   animation: uiFadeIn 0.5s ease forwards;
 }
 @keyframes uiFadeIn {
@@ -111,7 +116,7 @@ body:not(.app-loading) .bottom-left {
 /* ── Top-left buttons ─────────────────────────────────────── */
 .top-left-btns {
   position: fixed;
-  top: 14px;
+  top: calc(14px + var(--tg-safe-top) + var(--tg-content-safe-top));
   left: 14px;
   display: flex;
   gap: 6px;
@@ -623,7 +628,7 @@ body:not(.app-loading) .bottom-left {
 
   /* ── Top buttons: ниже чёлки/Dynamic Island ──────────────────── */
   .top-left-btns {
-    top: 38px;
+    top: calc(38px + var(--tg-safe-top) + var(--tg-content-safe-top));
   }
   .float-panel {
     top: 92px;
@@ -783,7 +788,7 @@ body:not(.app-loading) .bottom-left {
   /* ── Mobile mini-player bar ──────────────────────────────────── */
   .player-mini-bar {
     position: fixed;
-    bottom: 56px;
+    bottom: calc(56px + var(--tg-safe-bottom));
     left: 14px;
     right: 14px;
     display: none;

@@ -472,7 +472,7 @@ const S = {
   episode:       null,
   playing:       false,
   distOpen:      false,
-  hintDismissed: localStorage.getItem('hintDone') === '1',
+  hintDismissed: false,
   minutes:       parseInt(localStorage.getItem('minutes') || '186'),
   simProgress:   0,
   simTimer:      null,
@@ -501,6 +501,7 @@ function splashDone() {
   setTimeout(() => {
     document.getElementById('splash').classList.add('hidden');
     document.body.classList.remove('app-loading');
+    showHint();
     setTimeout(() => map.invalidateSize(), 100);
   }, 400);
 }
@@ -1102,10 +1103,6 @@ function loadEpisode(id, realDistrictName) {
   localStorage.setItem('minutes', S.minutes);
   document.getElementById('minutes-val').textContent = S.minutes;
 
-  // Hint
-  if (!S.hintDismissed) {
-    document.getElementById('hint-pill').classList.remove('hidden');
-  }
 }
 
 /* ── Audio element events ─────────────────────────────────── */
@@ -1328,19 +1325,22 @@ function buildDistrictsList() {
 }
 
 /* ── Hint ─────────────────────────────────────────────────── */
-function dismissHint() {
-  document.getElementById('hint-pill').classList.add('hidden');
-  S.hintDismissed = true;
-  localStorage.setItem('hintDone', '1');
+function showHint() {
+  const pill = document.getElementById('hint-pill');
+  if (!pill || S.hintDismissed) return;
+  localStorage.removeItem('hintDone');
+  if (isMobile()) {
+    const hintSpan = pill.querySelector('span');
+    if (hintSpan) {
+      hintSpan.textContent = 'перемещайте карту и нажмите на нужный район, либо выберите через список';
+    }
+  }
+  pill.classList.remove('hidden');
 }
 
-// Show hint by default if not dismissed
-if (S.hintDismissed) {
-  document.getElementById('hint-pill').classList.add('hidden');
-}
-if (isMobile()) {
-  const hintSpan = document.querySelector('#hint-pill span');
-  if (hintSpan) hintSpan.textContent = 'перемещайте карту и нажмите на нужный район, либо выберите через список';
+function dismissHint() {
+  document.getElementById('hint-pill')?.classList.add('hidden');
+  S.hintDismissed = true;
 }
 
 /* ── Settings ─────────────────────────────────────────────── */
@@ -1418,6 +1418,37 @@ document.getElementById('map').addEventListener('click', () => {
 });
 
 /* ── Init ─────────────────────────────────────────────────── */
+
+function initTelegramMiniApp() {
+  const tg = window.Telegram?.WebApp;
+  if (!tg) return;
+
+  document.body.classList.add('tg-app');
+  tg.ready();
+  tg.expand();
+
+  tg.setHeaderColor('#000000');
+  tg.setBackgroundColor('#000000');
+
+  if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+
+  function applyTelegramInsets() {
+    const root = document.documentElement;
+    const sa = tg.safeAreaInset || {};
+    const contentSa = tg.contentSafeAreaInset || {};
+    root.style.setProperty('--tg-safe-top', `${sa.top || 0}px`);
+    root.style.setProperty('--tg-safe-bottom', `${sa.bottom || 0}px`);
+    root.style.setProperty('--tg-content-safe-top', `${contentSa.top || 0}px`);
+    root.style.setProperty('--tg-content-safe-bottom', `${contentSa.bottom || 0}px`);
+    map?.invalidateSize();
+  }
+
+  applyTelegramInsets();
+  tg.onEvent('viewportChanged', applyTelegramInsets);
+}
+
+initTelegramMiniApp();
+
 document.getElementById('minutes-val').textContent = S.minutes;
 buildDistrictsList();
 buildWave();
